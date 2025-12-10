@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Sistema di gestione strategica per battaglie alleanza con mappa interattiva e assegnazione operatori" />
+  <meta name="theme-color" content="#2563eb" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Strategia Alleanza - Tempesta</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+```
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #e5e7eb;
+  min-height: 100vh;
+}
+
+.app-container {
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+/* HEADER */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: linear-gradient(90deg, #2563eb, #4f46e5);
+  color: white;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.header-title {
+  text-align: center;
+  font-weight: 800;
+  font-size: 24px;
+  margin-bottom: 16px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.header-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.btn {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background: white;
+  color: #4f46e5;
+}
+
+.btn-success {
+  background: #22c55e;
+  color: white;
+}
+
+/* MAIN CONTENT */
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.section {
+  background: rgba(15, 23, 42, 0.8);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: #3b82f6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* KILL SWAT */
+.kill-swat-section {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+}
+
+.operators-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.operator-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.operator-input {
+  flex: 1;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.95);
+  color: #111827;
+}
+
+.operator-input:focus {
+  outline: none;
+  border-color: #fbbf24;
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.3);
+}
+
+.btn-remove {
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  color: white;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-remove:hover {
+  background: rgba(0, 0, 0, 0.5);
+  transform: scale(1.1);
+}
+
+.btn-add {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px dashed rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+  padding: 12px;
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-add:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* RESERVES SECTION */
+.reserves-section {
+  background: linear-gradient(135deg, #facc15, #eab308);
+  color: #111827;
+}
+
+.reserves-section .section-title {
+  color: #78350f;
+}
+
+.reserves-section .operator-input {
+  background: #fefce8;
+  border-color: rgba(120, 53, 15, 0.4);
+}
+
+.reserves-section .operator-input:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.3);
+}
+
+.reserves-banner {
+  background: #ffd700;
+  color: #111827;
+  padding: 8px 16px;
+  font-weight: 800;
+  font-size: 11px;
+  text-align: center;
+  border-top: 2px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.reserves-names {
+  font-weight: 600;
+}
+
+/* BUILDINGS GRID */
+.buildings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.building-card {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border-radius: 12px;
+  padding: 16px;
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.building-card:hover {
+  border-color: #3b82f6;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+}
+
+.building-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.building-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.protected-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #fbbf24;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.building-info {
+  flex: 1;
+}
+
+.building-number {
+  font-weight: 800;
+  font-size: 18px;
+  color: #3b82f6;
+}
+
+.building-type {
+  font-size: 14px;
+  color: #9ca3af;
+  margin: 2px 0;
+}
+
+.building-rate {
+  font-size: 14px;
+  color: #22c55e;
+  font-weight: 700;
+}
+
+.players-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.player-tag {
+  background: rgba(34, 197, 94, 0.2);
+  border-left: 3px solid #22c55e;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.no-players {
+  color: #6b7280;
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.modal {
+  background: #0f172a;
+  border-radius: 20px;
+  max-width: 500px;
+  width: 100%;
+  border: 2px solid #3b82f6;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #3b82f6;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 32px;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: #ef4444;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-operators-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.modal-operator-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.modal-operator-input {
+  flex: 1;
+  border-radius: 10px;
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  background: #1e293b;
+  color: white;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.modal-operator-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.modal-footer {
+  padding: 20px;
+  border-top: 2px solid rgba(59, 130, 246, 0.3);
+}
+
+.btn-full {
+  width: 100%;
+  border-radius: 12px;
+  padding: 14px;
+  border: none;
+  font-weight: 800;
+  font-size: 16px;
+  background: #22c55e;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-full:hover {
+  background: #16a34a;
+  transform: translateY(-2px);
+}
+
+/* SCREENSHOT VIEW */
+.hidden {
+  display: none !important;
+}
+
+.screenshot-view {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  padding: 0;
+}
+
+.screenshot-container {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.screenshot-header {
+  background: linear-gradient(90deg, #2563eb, #4f46e5);
+  color: white;
+  padding: 20px;
+  border-radius: 16px 16px 0 0;
+  text-align: center;
+}
+
+.screenshot-header-title {
+  font-weight: 800;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.screenshot-date {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.screenshot-kill-section {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  color: white;
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.kill-swat-title {
+  font-weight: 800;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.kill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.kill-tag {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* MAP SECTION */
+.map-section {
+  background: rgba(15, 23, 42, 0.9);
+  padding: 0;
+  border-radius: 0;
+}
+
+.map-container {
+  position: relative;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+    linear-gradient(135deg, #1a1f3a 0%, #0d1224 50%, #1a1f3a 100%);
+  border-radius: 0;
+  height: 700px;
+  overflow: hidden;
+  box-shadow: none;
+  margin-bottom: 0;
+  border-top: 3px solid rgba(59, 130, 246, 0.3);
+  border-bottom: 3px solid rgba(59, 130, 246, 0.3);
+}
+
+.map-building {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.map-building-tile {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 0 25px rgba(59, 130, 246, 0.6),
+    0 0 15px rgba(0, 0, 0, 0.9),
+    inset 0 2px 10px rgba(255, 255, 255, 0.2);
+  position: relative;
+  font-size: 24px;
+  overflow: hidden;
+}
+
+.map-building-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.25),
+    rgba(0, 0, 0, 0.3));
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.map-protected-badge {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  background: #fbbf24;
+  border-radius: 50%;
+  border: 2px solid white;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  z-index: 2;
+}
+
+.map-id-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: white;
+  color: #111827;
+  font-weight: 900;
+  font-size: 11px;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  z-index: 2;
+}
+
+.map-operators {
+  position: absolute;
+  top: 105%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 70px;
+  align-items: center;
+}
+
+.map-operator-name {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(15, 23, 42, 0.95));
+  color: #ffffff;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+  border: 2px solid rgba(59, 130, 246, 0.6);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.8),
+    0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+/* STRATEGY TEXT */
+.strategy-section {
+  background: rgba(15, 23, 42, 0.9);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 20px;
+  border: 2px solid rgba(34, 197, 94, 0.3);
+}
+
+.strategy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.strategy-title {
+  font-weight: 800;
+  font-size: 18px;
+  color: #22c55e;
+}
+
+.btn-copy {
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-copy:hover {
+  background: #16a34a;
+  transform: translateY(-2px);
+}
+
+.strategy-text-wrapper {
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 12px;
+  padding: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.strategy-text {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #4ade80;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.strategy-hint {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .header-title {
+    font-size: 20px;
+  }
+
+  .buildings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .map-container {
+    height: 600px;
+  }
+
+  .map-building-tile {
+    width: 55px;
+    height: 55px;
+    font-size: 22px;
+  }
+
+  .map-operator-name {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  .map-operators {
+    top: 105%;
+    min-width: 60px;
+    gap: 2px;
+  }
+
+  .map-id-badge {
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+  }
+
+  .map-protected-badge {
+    width: 16px;
+    height: 16px;
+    font-size: 9px;
+  }
+
+  .kill-swat-title {
+    font-size: 13px;
+  }
+
+  .kill-tag {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+
+  .reserves-banner {
+    font-size: 10px;
+    padding: 6px 12px;
+  }
+}
+```
+
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-title">🎯 Gestione Strategia Alleanza</div>
+    <div class="header-buttons">
+      <button id="btnScreenshot" class="btn btn-primary">📸 Anteprima Screenshot</button>
+      <button id="btnCopyMain" class="btn btn-success">📋 Copia Testo Strategia</button>
+      <button id="btnShare30" class="btn btn-primary">📤 Condividi 30 giocatori</button>
+    </div>
+  </div>
+
+  <!-- EDIT VIEW -->
+
+  <div id="editView" class="main-content">
+    <!-- KILL SWAT SECTION -->
+    <div class="section kill-swat-section">
+      <div class="section-title">⚡ KILL SWAT - Unità Mobile d'Attacco</div>
+      <div id="killSwatList" class="operators-list"></div>
+      <button id="btnAddKillSwat" class="btn-add">
+        <span style="font-size: 20px;">+</span> Aggiungi Operatore
+      </button>
+    </div>
+
+```
+<!-- BUILDINGS SECTION -->
+<div class="section">
+  <div class="section-title">🏢 Assegnazione Edifici</div>
+  <div id="buildingsGrid" class="buildings-grid"></div>
+</div>
+
+<!-- RESERVE SECTION -->
+<div class="section reserves-section">
+  <div class="section-title">🟨 Riserve (max 10)</div>
+  <div id="reservesList" class="operators-list"></div>
+  <button id="btnAddReserve" class="btn-add">
+    <span style="font-size: 20px;">+</span> Aggiungi Riserva
+  </button>
+</div>
+```
+
+  </div>
+
+  <!-- MODAL -->
+
+  <div id="modalOverlay" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div id="modalTitle" class="modal-title">Edificio</div>
+        <button id="modalClose" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="modalOperatorsList" class="modal-operators-list"></div>
+        <button id="btnAddModalOperator" class="btn-add">
+          <span style="font-size: 20px;">+</span> Aggiungi Operatore
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button id="modalSave" class="btn-full">✓ Salva Assegnazioni</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREENSHOT VIEW -->
+
+  <div id="screenshotView" class="screenshot-view hidden">
+    <div class="screenshot-container">
+      <!-- Contenitore screenshot -->
+      <div id="screenshotCapture">
+        <!-- Kill Swat -->
+        <div id="screenshotKillSection" class="screenshot-kill-section">
+          <div class="kill-swat-title">⚡ KILL SWAT - Unità Mobile d'Attacco</div>
+          <div id="killTags" class="kill-tags"></div>
+        </div>
+
+```
+    <!-- Map -->
+    <div class="map-section">
+      <div id="mapContainer" class="map-container"></div>
+    </div>
+
+    <!-- Reserves Banner -->
+    <div id="screenshotReservesBanner" class="reserves-banner" style="display: none;">
+      RISERVE:
+      <span id="screenshotReservesNames" class="reserves-names"></span>
+    </div>
+  </div>
+
+  <!-- Strategy Text -->
+  <div class="strategy-section">
+    <div class="strategy-header">
+      <div class="strategy-title">📋 Testo Strategia Completa</div>
+      <button id="btnCopyScreenshot" class="btn-copy">📋 Copia Testo</button>
+    </div>
+    <div class="strategy-text-wrapper">
+      <pre id="strategyText" class="strategy-text"></pre>
+    </div>
+    <div class="strategy-hint">
+      💡 Copia il testo e condividilo nella chat dell'alleanza
+    </div>
+  </div>
+
+  <!-- Back Button -->
+  <div style="margin-top: 20px; text-align: center;">
+    <button id="btnBack" class="btn btn-primary" style="padding: 14px 32px; font-size: 16px;">
+      ← Torna alla Modifica
+    </button>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+<script>
+  // ===== CONFIGURAZIONE EDIFICI =====
+  const buildings = [
+    // Riga alta
+    { id: 1, x: 20, y: 15, rate: 25, type: "Data Center 1", icon: "💾", color: "#0ea5e9" },
+    { id: 2, x: 80, y: 15, rate: 25, type: "Data Center 2", icon: "💾", color: "#0ea5e9" },
+
+    // Riga intermedia alta
+    { id: 3, x: 20, y: 32, rate: 20, type: "Serum Factory 1", icon: "🧬", color: "#22c55e" },
+    { id: 4, x: 50, y: 32, rate: 40, type: "Power Tower", icon: "⚡", color: "#f97316" },
+    { id: 5, x: 80, y: 32, rate: 20, type: "Defense System 2", icon: "🛡️", color: "#9ca3af" },
+
+    // Riga intermedia bassa
+    { id: 6, x: 20, y: 49, rate: 20, type: "Defense System 1", icon: "🛡️", color: "#9ca3af" },
+    { id: 7, x: 50, y: 49, rate: 100, protected: true, type: "Virus Lab", icon: "☣️", color: "#a855f7" },
+    { id: 8, x: 80, y: 49, rate: 20, type: "Serum Factory 2", icon: "🧬", color: "#22c55e" },
+
+    // Riga bassa - magazzini
+    { id: 9,  x: 20, y: 70, rate: 20, type: "Sample Warehouse 1", icon: "📦", color: "#16a34a" },
+    { id: 10, x: 40, y: 70, rate: 20, type: "Sample Warehouse 2", icon: "📦", color: "#16a34a" },
+    { id: 11, x: 60, y: 70, rate: 20, type: "Sample Warehouse 3", icon: "📦", color: "#16a34a" },
+    { id: 12, x: 80, y: 70, rate: 20, type: "Sample Warehouse 4", icon: "📦", color: "#16a34a" }
+  ];
+
+  // ===== STATO =====
+  let players = {};
+  let selectedBuildingId = null;
+
+  // ===== STORAGE =====
+  function loadPlayers() {
+    try {
+      const saved = localStorage.getItem("strategiaPlayers");
+      players = saved ? JSON.parse(saved) : {};
+    } catch {
+      players = {};
+    }
+
+    if (!players.killSwat || !Array.isArray(players.killSwat)) {
+      players.killSwat = [];
+    }
+
+    if (!players.reserves || !Array.isArray(players.reserves)) {
+      players.reserves = [];
+    }
+
+    buildings.forEach(b => {
+      if (!players[b.id] || !Array.isArray(players[b.id])) {
+        players[b.id] = [];
+      }
+    });
+  }
+
+  function savePlayers() {
+    localStorage.setItem("strategiaPlayers", JSON.stringify(players));
+  }
+
+  // ===== GENERA TESTO STRATEGIA =====
+  function generateStrategyText() {
+    const killSwatNames = (players.killSwat || [])
+      .filter(p => p && p.trim() !== "")
+      .join(", ") || "**********";
+
+    const reservesNames = (players.reserves || [])
+      .filter(p => p && p.trim() !== "")
+      .join(", ") || "**********";
+
+    const getNames = (ids) => {
+      const all = [];
+      ids.forEach(id => {
+        (players[id] || []).forEach(p => {
+          if (p && p.trim() !== "") all.push(p.trim());
+        });
+      });
+      return all.join(", ") || "**********";
+    };
+
+    const dateStr = new Date().toLocaleDateString("it-IT", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+
+    return `STRATEGIA OPERATIVA ALLEANZA - TEMPESTA DEL CANYON
+
+Data: ${dateStr}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ KILL SWAT - CACCIA ALLE BALENE
+
+Questa unità rappresenta la nostra forza mobile di attacco rapido. Il loro compito è colpire dove serve, rinforzare il fronte più debole e chiudere gli edifici chiave del nemico, con priorità assoluta su Virus Lab e Power Tower.
+
+Operatori assegnati: ${killSwatNames}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+☣️ VIRUS LAB - EDIFICIO 7 (+100/s)
+
+Il Virus Lab è il centro nevralgico della mappa. Con una produzione di +100 punti al secondo, ogni secondo di controllo vale oro. 
+
+Operatori assegnati: ${getNames([7])}
+
+Linee guida:
+• Deve essere preso e difeso appena possibile.
+• In caso di pressione forte, la Kill Swat ruota immediatamente in supporto.
+• Nessuno abbandona il Lab senza aver annunciato il cambio in chat.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ POWER TOWER - EDIFICIO 4 (+40/s)
+
+La Power Tower è il polmone energetico della nostra strategia. Mantenerla significa accumulare un flusso costante di punti e costringere il nemico ad inseguire.
+
+Operatori assegnati: ${getNames([4])}
+
+Compiti:
+• Prendere la torre subito dopo la stabilizzazione del Virus Lab.
+• Coordinarsi con i Data Center per massimizzare il vantaggio di punti.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💾 DATA CENTER 1 & 2 - EDIFICI 1 E 2 (+25/s)
+
+I due Data Center sono il motore iniziale di punti e la base per lo sviluppo della mappa. Se li teniamo da subito, obblighiamo il nemico a sprecare tempo per recuperare.
+
+Operatori assegnati:
+• Data Center 1 (Ed. 1): ${getNames([1])}
+• Data Center 2 (Ed. 2): ${getNames([2])}
+
+Priorità:
+1) Conquista rapida all'inizio.
+2) Mantenere sempre almeno un presidio, mai lasciarli completamente vuoti.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🧬 SERUM FACTORY 1 & 2 - EDIFICI 3 E 8 (+20/s)
+
+Le Serum Factory aumentano il flusso di punti e funzionano come cuscinetto tra la linea frontale (Power Tower / Virus Lab) e i Data Center.
+
+Operatori assegnati:
+• Serum Factory 1 (Ed. 3): ${getNames([3])}
+• Serum Factory 2 (Ed. 8): ${getNames([8])}
+
+Compiti:
+• Tenere la linea viva mentre la Kill Swat si muove.
+• In caso di attacco massiccio, diventano punti di raccolta per contrattaccare.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🛡️ DEFENSE SYSTEM 1 & 2 - EDIFICI 6 E 5 (+20/s)
+
+I sistemi difensivi coprono i fianchi del Virus Lab e della Power Tower. Se li perdiamo, il nemico ha strada libera verso il centro.
+
+Operatori assegnati:
+• Defense System 1 (Ed. 6): ${getNames([6])}
+• Defense System 2 (Ed. 5): ${getNames([5])}
+
+Indicazioni:
+• Devono essere sempre presidiati quando il Lab è sotto pressione.
+• Ideali per giocatori che tengono bene la posizione.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📦 SAMPLE WAREHOUSE 1–4 - EDIFICI 9, 10, 11, 12 (+20/s)
+
+I magazzini di campioni sono la "banca" della squadra: non sono al centro del conflitto iniziale, ma nel mid/late game fanno la differenza.
+
+Operatori assegnati:
+• Warehouse 1 (Ed. 9): ${getNames([9])}
+• Warehouse 2 (Ed. 10): ${getNames([10])}
+• Warehouse 3 (Ed. 11): ${getNames([11])}
+• Warehouse 4 (Ed. 12): ${getNames([12])}
+
+Uso strategico:
+• Ottimi per i giocatori che arrivano leggermente in ritardo alla battaglia.
+• Non vanno ignorati: 4 magazzini insieme valgono un edificio grosso.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🟨 RISERVE
+
+Le riserve sono la nostra assicurazione sulla vita. Entrano quando:
+• Un titolare rimane senza truppe.
+• Qualcuno deve uscire improvvisamente.
+• Serve un cambio rapido su un edificio focale.
+
+Riserve inserite: ${reservesNames}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 NOTE OPERATIVE
+
+Il successo di questa strategia dipende dal coordinamento perfetto tra tutti gli operatori. È obbligatorio mantenere la comunicazione attiva via chat alleanza durante tutte le fasi della battaglia.
+
+Punti critici da rispettare:
+
+✓ Virus Lab sempre presidiato.
+✓ Power Tower e Data Center come seconda priorità assoluta.
+✓ Kill Swat pronta a muoversi dove si apre il buco.
+✓ Riserve operative e avvisate prima dell'inizio della battaglia.
+
+La disciplina tattica e il supporto reciproco sono le chiavi della vittoria.
+
+💪 Forza Alleanza! 💪`;
+  }
+
+  // ===== RENDER KILL SWAT LIST =====
+  function renderKillSwatList() {
+    const container = document.getElementById("killSwatList");
+    container.innerHTML = "";
+
+    if (players.killSwat.length === 0) {
+      players.killSwat.push("");
+    }
+
+    players.killSwat.forEach((name, index) => {
+      const item = document.createElement("div");
+      item.className = "operator-item";
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.className = "operator-input";
+      input.placeholder = `Operatore ${index + 1}`;
+      input.value = name || "";
+      
+      // Event listener diretto senza debounce
+      input.addEventListener("input", (e) => {
+        players.killSwat[index] = e.target.value;
+        savePlayers();
+      });
+
+      const btnRemove = document.createElement("button");
+      btnRemove.className = "btn-remove";
+      btnRemove.innerHTML = "×";
+      btnRemove.addEventListener("click", () => {
+        players.killSwat.splice(index, 1);
+        if (players.killSwat.length === 0) {
+          players.killSwat.push("");
+        }
+        savePlayers();
+        renderKillSwatList();
+      });
+
+      item.appendChild(input);
+      if (players.killSwat.length > 1) {
+        item.appendChild(btnRemove);
+      }
+
+      container.appendChild(item);
+    });
+  }
+
+  // ===== RENDER RESERVES LIST =====
+  function renderReservesList() {
+    const container = document.getElementById("reservesList");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    if (players.reserves.length === 0) {
+      players.reserves.push("");
+    }
+
+    players.reserves.forEach((name, index) => {
+      const item = document.createElement("div");
+      item.className = "operator-item";
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.className = "operator-input";
+      input.placeholder = `Riserva ${index + 1}`;
+      input.value = name || "";
+      
+      // Event listener diretto
+      input.addEventListener("input", (e) => {
+        players.reserves[index] = e.target.value;
+        savePlayers();
+      });
+
+      const btnRemove = document.createElement("button");
+      btnRemove.className = "btn-remove";
+      btnRemove.innerHTML = "×";
+      btnRemove.addEventListener("click", () => {
+        players.reserves.splice(index, 1);
+        if (players.reserves.length === 0) {
+          players.reserves.push("");
+        }
+        savePlayers();
+        renderReservesList();
+      });
+
+      item.appendChild(input);
+      if (players.reserves.length > 1) {
+        item.appendChild(btnRemove);
+      }
+
+      container.appendChild(item);
+    });
+  }
+
+  // ===== RENDER EDIT VIEW =====
+  function renderEditView() {
+    renderKillSwatList();
+
+    const grid = document.getElementById("buildingsGrid");
+    grid.innerHTML = "";
+
+    buildings.forEach(b => {
+      const card = document.createElement("div");
+      card.className = "building-card";
+
+      const header = document.createElement("div");
+      header.className = "building-header";
+
+      const icon = document.createElement("div");
+      icon.className = "building-icon";
+      icon.style.background = `linear-gradient(135deg, ${b.color}, #0f172a)`;
+      icon.textContent = b.icon;
+
+      if (b.protected) {
+        const badge = document.createElement("div");
+        badge.className = "protected-badge";
+        badge.textContent = "🛡️";
+        icon.appendChild(badge);
+      }
+
+      const info = document.createElement("div");
+      info.className = "building-info";
+      info.innerHTML = `
+        <div class="building-number">Edificio ${b.id}</div>
+        <div class="building-type">${b.type}</div>
+        <div class="building-rate">+${b.rate}/s</div>
+      `;
+
+      header.appendChild(icon);
+      header.appendChild(info);
+
+      const playersList = document.createElement("div");
+      playersList.className = "players-list";
+
+      const assigned = (players[b.id] || []).filter(p => p && p.trim() !== "");
+      if (assigned.length > 0) {
+        assigned.forEach(p => {
+          const tag = document.createElement("div");
+          tag.className = "player-tag";
+          tag.textContent = "👤 " + p;
+          playersList.appendChild(tag);
+        });
+      } else {
+        const noPlayers = document.createElement("div");
+        noPlayers.className = "no-players";
+        noPlayers.textContent = "Nessun operatore assegnato";
+        playersList.appendChild(noPlayers);
+      }
+
+      card.appendChild(header);
+      card.appendChild(playersList);
+
+      card.addEventListener("click", () => openModal(b.id));
+
+      grid.appendChild(card);
+    });
+  }
+
+  // ===== MODAL =====
+  function openModal(id) {
+    selectedBuildingId = id;
+    const building = buildings.find(b => b.id === id);
+    document.getElementById("modalTitle").textContent = `Edificio ${id} - ${building.type}`;
+
+    renderModalOperatorsList();
+
+    document.getElementById("modalOverlay").style.display = "flex";
+  }
+
+  function renderModalOperatorsList() {
+    const container = document.getElementById("modalOperatorsList");
+    container.innerHTML = "";
+
+    if (!players[selectedBuildingId]) {
+      players[selectedBuildingId] = [];
+    }
+
+    if (players[selectedBuildingId].length === 0) {
+      players[selectedBuildingId].push("");
+    }
+
+    players[selectedBuildingId].forEach((name, index) => {
+      const item = document.createElement("div");
+      item.className = "modal-operator-item";
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.className = "modal-operator-input";
+      input.placeholder = `Operatore ${index + 1}`;
+      input.value = name || "";
+      
+      // Event listener diretto
+      input.addEventListener("input", (e) => {
+        players[selectedBuildingId][index] = e.target.value;
+        savePlayers();
+      });
+
+      const btnRemove = document.createElement("button");
+      btnRemove.className = "btn-remove";
+      btnRemove.innerHTML = "×";
+      btnRemove.addEventListener("click", () => {
+        players[selectedBuildingId].splice(index, 1);
+        if (players[selectedBuildingId].length === 0) {
+          players[selectedBuildingId].push("");
+        }
+        renderModalOperatorsList();
+      });
+
+      item.appendChild(input);
+      if (players[selectedBuildingId].length > 1) {
+        item.appendChild(btnRemove);
+      }
+
+      container.appendChild(item);
+    });
+  }
+
+  function closeModal() {
+    document.getElementById("modalOverlay").style.display = "none";
+    selectedBuildingId = null;
+  }
+
+  function saveModal() {
+    if (!selectedBuildingId) return;
+
+    savePlayers();
+    renderEditView();
+    closeModal();
+  }
+
+  // ===== RENDER SCREENSHOT VIEW =====
+  function renderScreenshotView() {
+    // Kill Swat
+    const killSection = document.getElementById("screenshotKillSection");
+    const killTags = document.getElementById("killTags");
+    const ks = (players.killSwat || []).filter(p => p && p.trim() !== "");
+
+    killTags.innerHTML = "";
+    if (ks.length > 0) {
+      killSection.style.display = "block";
+      ks.forEach(p => {
+        const tag = document.createElement("div");
+        tag.className = "kill-tag";
+        tag.textContent = p;
+        killTags.appendChild(tag);
+      });
+    } else {
+      // Mostra comunque la sezione anche senza operatori
+      killSection.style.display = "block";
+      const emptyTag = document.createElement("div");
+      emptyTag.className = "kill-tag";
+      emptyTag.textContent = "Nessun operatore assegnato";
+      emptyTag.style.opacity = "0.6";
+      killTags.appendChild(emptyTag);
+    }
+
+    // Map
+    const mapContainer = document.getElementById("mapContainer");
+    mapContainer.innerHTML = "";
+
+    buildings.forEach(b => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "map-building";
+      wrapper.style.left = b.x + "%";
+      wrapper.style.top = b.y + "%";
+
+      const tile = document.createElement("div");
+      tile.className = "map-building-tile";
+      tile.style.background = `linear-gradient(135deg, ${b.color}, #111827)`;
+
+      if (b.protected) {
+        const protectedBadge = document.createElement("div");
+        protectedBadge.className = "map-protected-badge";
+        protectedBadge.textContent = "🛡️";
+        tile.appendChild(protectedBadge);
+      }
+
+      const idBadge = document.createElement("div");
+      idBadge.className = "map-id-badge";
+      idBadge.textContent = b.id;
+      tile.appendChild(idBadge);
+
+      const icon = document.createElement("div");
+      icon.textContent = b.icon;
+      icon.style.position = "relative";
+      icon.style.zIndex = "1";
+      tile.appendChild(icon);
+
+      wrapper.appendChild(tile);
+
+      const assigned = (players[b.id] || []).filter(p => p && p.trim() !== "");
+      if (assigned.length > 0) {
+        const operatorsDiv = document.createElement("div");
+        operatorsDiv.className = "map-operators";
+
+        assigned.forEach(p => {
+          const nameDiv = document.createElement("div");
+          nameDiv.className = "map-operator-name";
+          nameDiv.textContent = p;
+          operatorsDiv.appendChild(nameDiv);
+        });
+
+        wrapper.appendChild(operatorsDiv);
+      }
+
+      mapContainer.appendChild(wrapper);
+    });
+
+    // Reserves banner
+    const reservesBanner = document.getElementById("screenshotReservesBanner");
+    const reservesNamesSpan = document.getElementById("screenshotReservesNames");
+    const reserves = (players.reserves || []).filter(p => p && p.trim() !== "");
+    if (reserves.length > 0) {
+      reservesBanner.style.display = "block";
+      reservesNamesSpan.textContent = reserves.join(" · ");
+    } else {
+      reservesBanner.style.display = "none";
+      reservesNamesSpan.textContent = "";
+    }
+
+    // Strategy Text
+    document.getElementById("strategyText").textContent = generateStrategyText();
+  }
+
+  // ===== COPY TO CLIPBOARD =====
+  function copyStrategy(btnId) {
+    const text = generateStrategyText();
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        showCopyFeedback(btnId);
+      }).catch(() => {
+        fallbackCopy(text);
+        showCopyFeedback(btnId);
+      });
+    } else {
+      fallbackCopy(text);
+      showCopyFeedback(btnId);
+    }
+  }
+
+  function generateShareList() {
+    const kill = (players.killSwat || []).filter(n => n && n.trim() !== "");
+    const titolari = [];
+    const seen = new Set();
+
+    function addName(name) {
+      const n = name.trim();
+      if (!n || seen.has(n) || titolari.length >= 20) return;
+      seen.add(n);
+      titolari.push(n);
+    }
+
+    kill.forEach(addName);
+
+    const ids = buildings.map(b => b.id).sort((a, b) => a - b);
+    ids.forEach(id => {
+      (players[id] || []).forEach(addName);
+    });
+
+    const reserves = [];
+    (players.reserves || []).forEach(name => {
+      const n = name && name.trim();
+      if (n && reserves.length < 10) reserves.push(n);
+    });
+
+    const today = new Date().toLocaleDateString("it-IT");
+
+    let text = `LISTA GIOCATORI – TEMPESTA DEL CANYON\nData: ${today}\n\nTITOLARI (max 20):\n`;
+    if (titolari.length === 0) {
+      text += "- nessun titolare inserito\n";
+    } else {
+      titolari.forEach((name, idx) => {
+        text += `${idx + 1}) ${name}\n`;
+      });
+    }
+
+    text += `\nRISERVE (max 10):\n`;
+    if (reserves.length === 0) {
+      text += "- nessuna riserva inserita\n";
+    } else {
+      reserves.forEach((name, idx) => {
+        text += `${idx + 1}) ${name}\n`;
+      });
+    }
+
+    return text;
+  }
+
+  function copyShareList() {
+    const text = generateShareList();
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        showCopyFeedback("btnShare30");
+      }).catch(() => {
+        fallbackCopy(text);
+        showCopyFeedback("btnShare30");
+      });
+    } else {
+      fallbackCopy(text);
+      showCopyFeedback("btnShare30");
+    }
+  }
+
+  function fallbackCopy(text) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand("copy");
+    } catch (e) {}
+    document.body.removeChild(textarea);
+  }
+
+  function showCopyFeedback(btnId) {
+    const btn = document.getElementById(btnId);
+    const originalText = btn.textContent;
+    const originalBg = btn.style.backgroundColor;
+
+    btn.textContent = "✅ Copiato!";
+    btn.style.backgroundColor = "#16a34a";
+
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.style.backgroundColor = originalBg;
+    }, 2000);
+  }
+
+  // ===== NAVIGATION =====
+  function showScreenshotView() {
+    renderScreenshotView();
+    document.getElementById("editView").classList.add("hidden");
+    document.querySelector(".header").classList.add("hidden");
+    document.getElementById("screenshotView").classList.remove("hidden");
+    window.scrollTo(0, 0);
+  }
+
+  function showEditView() {
+    document.getElementById("screenshotView").classList.add("hidden");
+    document.querySelector(".header").classList.remove("hidden");
+    document.getElementById("editView").classList.remove("hidden");
+  }
+
+  // ===== INIT =====
+  document.addEventListener("DOMContentLoaded", () => {
+    loadPlayers();
+    renderEditView();
+    renderReservesList();
+
+    // Kill Swat add button
+    document.getElementById("btnAddKillSwat").addEventListener("click", () => {
+      players.killSwat.push("");
+      savePlayers();
+      renderKillSwatList();
+      // Focus sull'ultimo input aggiunto
+      setTimeout(() => {
+        const inputs = document.querySelectorAll("#killSwatList .operator-input");
+        if (inputs.length > 0) {
+          inputs[inputs.length - 1].focus();
+        }
+      }, 50);
+    });
+
+    // Reserves add button
+    document.getElementById("btnAddReserve").addEventListener("click", () => {
+      if ((players.reserves || []).length >= 10) {
+        alert("Hai raggiunto il limite massimo di 10 riserve");
+        return;
+      }
+      players.reserves.push("");
+      savePlayers();
+      renderReservesList();
+      // Focus sull'ultimo input aggiunto
+      setTimeout(() => {
+        const inputs = document.querySelectorAll("#reservesList .operator-input");
+        if (inputs.length > 0) {
+          inputs[inputs.length - 1].focus();
+        }
+      }, 50);
+    });
+
+    // Modal add operator button
+    document.getElementById("btnAddModalOperator").addEventListener("click", () => {
+      if (selectedBuildingId) {
+        players[selectedBuildingId].push("");
+        savePlayers();
+        renderModalOperatorsList();
+        // Focus sull'ultimo input aggiunto
+        setTimeout(() => {
+          const inputs = document.querySelectorAll("#modalOperatorsList .modal-operator-input");
+          if (inputs.length > 0) {
+            inputs[inputs.length - 1].focus();
+          }
+        }, 50);
+      }
+    });
+
+    // Buttons
+    document.getElementById("btnScreenshot").addEventListener("click", showScreenshotView);
+    document.getElementById("btnCopyMain").addEventListener("click", () => copyStrategy("btnCopyMain"));
+    document.getElementById("btnBack").addEventListener("click", showEditView);
+    document.getElementById("btnCopyScreenshot").addEventListener("click", () => copyStrategy("btnCopyScreenshot"));
+    document.getElementById("btnShare30").addEventListener("click", copyShareList);
+
+    // Modal
+    document.getElementById("modalClose").addEventListener("click", closeModal);
+    document.getElementById("modalSave").addEventListener("click", saveModal);
+    document.getElementById("modalOverlay").addEventListener("click", (e) => {
+      if (e.target.id === "modalOverlay") closeModal();
+    });
+  });
+</script>
+
+</body>
+</html>
